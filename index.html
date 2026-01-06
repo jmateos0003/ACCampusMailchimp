@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="es">
 <head>
@@ -206,7 +207,7 @@
       margin: 0 0 12px;
       color: var(--muted);
       line-height: 1.45;
-      font-size: 13px;
+      font-size: 14px;
     }
     .charts {
       display:grid;
@@ -243,7 +244,7 @@ canvas{
     }
     .table th, .table td {
       padding: 10px 10px;
-      font-size: 12px;
+      font-size: 13px;
       border-bottom: 1px solid rgba(255,255,255,0.06);
       vertical-align: top;
     }
@@ -254,7 +255,7 @@ canvas{
     .footer {
       margin-top: 22px;
       color: var(--muted2);
-      font-size: 12px;
+      font-size: 13px;
       line-height: 1.5;
     }
     @media (max-width: 980px) {
@@ -390,7 +391,7 @@ canvas{
   </section>
 
   <section class="panel" style="margin-top:14px;">
-    <h2>Recomendaciones accionables (sin reescribir nada ahora)</h2>
+    <h2>Recomendaciones o ideas próximas campañas</h2>
     <div id="actions" class="small"></div>
   </section>
 
@@ -833,10 +834,17 @@ scales: IS_MOBILE ? {
   actions.innerHTML = `
     <ol>
       <li><b>Repetir el “motor sorteo” (lo que más empuja clicks):</b> en 24/25 los sorteos sostienen CTR alto. Si el objetivo es llenar plazas, este formato genera <b>tráfico</b> y “calienta” a la audiencia sin depender solo de descuento.</li>
-      <li><b>Reducir repetición semántica en asuntos (para la próxima):</b> demasiados “últimas horas/oferta/descuento” → el usuario lo filtra. Mantener <b>2–3 líneas creativas</b> (club/Lezama/experiencia) y alternarlas con la línea de urgencia.</li>
-      <li><b>Optimizar franja horaria para acción:</b> priorizar envíos masivos en <b>10:00–12:00</b> cuando se pide decisión. Noche puede reservarse para “awareness” o recordatorios suaves.</li>
-      <li><b>Control de bajas:</b> revisar el segmento usado en “REGALA AC CAMPUS” (3,25% de bajas). Señal típica de: público poco alineado, demasiada presión comercial o falta de expectativa de recibir este tipo de mensaje.</li>
-      <li><b>Audiencias:</b> separar claramente (a) leads “fríos” (awareness + sorteo), (b) interesados previos, (c) compradores/antiguos alumnos. La misma creatividad no puede servir igual a todos.</li>
+      <br><li><b>Reducir repetición semántica en asuntos (para la próxima):</b> demasiados “últimas horas/oferta/descuento” → el usuario lo filtra. Mantener <b>2–3 líneas creativas</b> (club/Lezama/experiencia) y alternarlas con la línea de urgencia.</li>
+      <br><li><b>Optimizar franja horaria para acción:</b> priorizar envíos masivos en <b>10:00–12:00</b> cuando se pide decisión. Noche puede reservarse para “awareness” o recordatorios suaves.</li>
+      <br><li><b>Control de bajas:</b> revisar el segmento usado en “REGALA AC CAMPUS” (3,25% de bajas). Señal típica de: público poco alineado, demasiada presión comercial o falta de expectativa de recibir este tipo de mensaje.</li>
+      <br><li><b>Audiencias:</b> separar claramente <br>(a) leads “fríos” (awareness + sorteo) <br>(b) interesados previos <br>(c) compradores/antiguos alumnos. 
+	  <br>La misma creatividad no puede servir igual a todos.</li>
+  <br><li><b>Enviar mini-experiencias.</b> Dejar de enviar solo “info del campus” y empezar a enviar mini-experiencias. <br>Ejemplos: “¿Qué tipo de jugador/a sería tu hijo/a en el campus?” (email con 3 perfiles + CTA a descubrirlo en el campus). “Un día real en el campus, contado por un Iñaki Williams” (o  (email narrativo, no comercial).</li>
+<br><li><b>Emails de validación social real.</b> Dar más peso a: “Lo que nos dicen los padres después del campus” o “Por qué repiten año tras año”</li>
+<br><li><b>Asuntos menos obvios (comerciales, más humanos.</b>  Reducir:
+              ❌ “Últimas plazas” o ❌ “Descuento final”. <br>
+			  Y probar con cosas como: 
+			  <br>✅ “Esto es lo que más sorprende a los padres el primer día” <br>✅ “Si tu hijo/a viene al campus, esto va a pasar” o ✅ “La pregunta que siempre nos hacen antes de apuntarse”</li>
       
     </ol>
   `;
