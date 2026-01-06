@@ -1,0 +1,845 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>AC Campus Navidad — Email Performance Report (24/25 vs 25/26)</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #0b0c0f;
+      --panel: rgba(255,255,255,0.06);
+      --panel2: rgba(255,255,255,0.09);
+      --border: rgba(255,255,255,0.10);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.65);
+      --muted2: rgba(255,255,255,0.45);
+      --good: #58d68d;
+      --bad: #ff6b6b;
+      --warn: #ffd166;
+      --accent: #7aa7ff;
+      --shadow: 0 20px 60px rgba(0,0,0,0.45);
+      --radius: 22px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    html, body {
+      height: 100%;
+      background: radial-gradient(1000px 600px at 20% -10%, rgba(122,167,255,0.22), transparent 55%),
+                  radial-gradient(900px 600px at 85% 10%, rgba(255,209,102,0.16), transparent 55%),
+                  radial-gradient(1000px 600px at 50% 120%, rgba(88,214,141,0.10), transparent 50%),
+                  var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      margin: 0;
+    }
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 36px 20px 64px;
+    }
+    .topbar {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      background: rgba(18,20,24,0.75);
+      border-radius: 999px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.22);
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .badge b { color: var(--text); font-weight: 600; }
+    .hero {
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03));
+      border-radius: var(--radius);
+      padding: 28px 26px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+    .hero:before {
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: radial-gradient(800px 280px at 20% 0%, rgba(122,167,255,0.22), transparent 55%),
+                  radial-gradient(700px 320px at 90% 10%, rgba(255,209,102,0.18), transparent 58%);
+      pointer-events:none;
+      opacity: 0.9;
+    }
+    .hero > * { position:relative; }
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(26px, 3.5vw, 42px);
+      letter-spacing: -0.03em;
+    }
+    .subtitle {
+      margin: 0 0 18px;
+      color: var(--muted);
+      line-height: 1.45;
+      max-width: 78ch;
+      font-size: 15px;
+    }
+    .kpiRow {
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .card {
+      border: 1px solid var(--border);
+      background: rgba(18,20,24,0.82);
+      border-radius: 18px;
+      padding: 14px 14px 12px;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+    .card .label {
+      color: var(--muted2);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+    .card .value {
+      font-size: 26px;
+      letter-spacing: -0.02em;
+      font-weight: 650;
+    }
+
+    .kpiCompare{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      margin-top: 2px;
+    }
+    .kpiLine{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:10px;
+      padding: 6px 8px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.02);
+      border-radius: 12px;
+    }
+    .kpiLine strong{
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .kpiTag{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 11px;
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .kpiTag.now{
+      color: rgba(255,255,255,0.92);
+      border-color: rgba(122,167,255,0.40);
+      background: rgba(122,167,255,0.12);
+    }
+    .kpiTag.prev{
+      color: rgba(255,255,255,0.75);
+      border-color: rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .card .delta {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .pill {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .pill.good { color: var(--good); border-color: rgba(88,214,141,0.35); background: rgba(88,214,141,0.08); }
+    .pill.bad { color: var(--bad); border-color: rgba(255,107,107,0.35); background: rgba(255,107,107,0.08); }
+    .grid {
+      margin-top: 18px;
+      display:grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 14px;
+    }
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.03);
+      padding: 18px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+    }
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      letter-spacing: -0.01em;
+    }
+    .panel p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 13px;
+    }
+    .charts {
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .twoCols {
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    
+/* --- Responsive charts (avoid canvas distortion) --- */
+.chartBox{
+  position: relative;
+  width: 100%;
+  height: 320px;
+}
+.chartBox.tall{ height: 360px; }
+.chartBox.xl{ height: 400px; }
+canvas{
+  display:block;
+  width: 100% !important;
+  height: 100% !important;
+}
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow:hidden;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+    .table th, .table td {
+      padding: 10px 10px;
+      font-size: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      vertical-align: top;
+    }
+    .table th { text-align:left; color: var(--muted2); font-weight: 600; }
+    .table td { color: var(--text); }
+    .muted { color: var(--muted); }
+    .small { font-size: 12px; color: var(--muted); }
+    .footer {
+      margin-top: 22px;
+      color: var(--muted2);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    @media (max-width: 980px) {
+      .kpiRow { grid-template-columns: 1fr 1fr; }
+      .grid { grid-template-columns: 1fr; }
+      .twoCols { grid-template-columns: 1fr; }
+      
+/* Drop heavy blur on mobile to prevent banding artifacts */
+.card, .badge { backdrop-filter: none; }
+.chartBox{ height: 280px; }
+.chartBox.tall{ height: 320px; }
+.chartBox.xl{ height: 340px; }
+    }
+  
+@media (max-width: 640px){
+  .wrap{ padding: 18px 14px 46px; }
+  .topbar{ gap:10px; }
+  .badge{ width:100%; justify-content:center; text-align:center; }
+  .hero{ padding: 20px 16px; }
+  .kpiRow{ grid-template-columns: 1fr; }
+  h1{ font-size: 26px; }
+  .subtitle{ font-size: 14px; }
+  .panel{ padding: 14px; border-radius: 18px; }
+  .twoCols{ grid-template-columns: 1fr; }
+  /* Make long labels readable */
+  .table th, .table td{ padding: 9px 8px; }
+}
+@media (max-width: 420px){
+  .card .value{ font-size: 22px; }
+  .badge{ font-size: 12px; }
+}
+
+    /* --- Fix gradient banding (GPU posterization) with subtle noise dither --- */
+    body{ position: relative; overflow-x: hidden; }
+    body::before{
+      content:"";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.06;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      mix-blend-mode: overlay;
+      transform: translateZ(0);
+    }
+    .wrap, .container, main, header, section, .grid, .row{
+      position: relative;
+      z-index: 1;
+    }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="badge">📧 <b>AC Campus Navidad</b> · Mailchimp · Comparativa 24/25 vs 25/26</div>
+    <div class="badge">📅 Ventana analizada: <b>oct–dic</b> · KPIs ponderados por destinatarios</div>
+  </div>
+
+  <section class="hero">
+    <h1>Informe de rendimiento — campañas de email</h1>
+    <p class="subtitle">
+      Este reporte compara <b>dos campañas completas</b> de AC Campus Navidad. 
+      Los KPIs principales están <b>ponderados por volumen de destinatarios</b> (para evitar que segmentos pequeños distorsionen la lectura).
+      Ingresos no incluidos (según petición).
+    </p>
+
+    <div class="kpiRow" id="kpiRow"></div>
+  </section>
+
+  <section class="grid">
+    <div class="panel">
+      <h2>Lo más importante (resumen ejecutivo)</h2>
+      <div id="execSummary" class="small"></div>
+      <div class="charts">
+        <div class="panel" style="padding:14px;border-radius:18px;background:rgba(255,255,255,0.02)">
+          <h2 style="margin:0 0 10px;font-size:14px;">Evolución semanal — CTR (ponderado)</h2>
+          <div class="chartBox xl"><div class="chartBox"><canvas id="chartWeeklyCtr"></canvas></div></div>
+          <p class="small muted">Interpretación: si el CTR semanal cae aunque la frecuencia sea estable, suele ser señal de <b>fatiga</b> (mensaje repetitivo) o <b>desalineación</b> entre asunto, contenido y CTA.</p>
+        </div>
+
+        <div class="twoCols">
+          <div class="panel" style="padding:14px;border-radius:18px;background:rgba(255,255,255,0.02)">
+            <h2 style="margin:0 0 10px;font-size:14px;">Top 5 — Aperturas</h2>
+            <div class="chartBox tall"><div class="chartBox"><canvas id="chartTopOpen"></canvas></div></div>
+          </div>
+          <div class="panel" style="padding:14px;border-radius:18px;background:rgba(255,255,255,0.02)">
+            <h2 style="margin:0 0 10px;font-size:14px;">Top 5 — Clicks</h2>
+            <div class="chartBox tall"><div class="chartBox"><canvas id="chartTopCtr"></canvas></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Diagnóstico (qué funcionó y qué no)</h2>
+      <div id="diagnostic" class="small"></div>
+
+      <div class="charts">
+        <div class="panel" style="padding:14px;border-radius:18px;background:rgba(255,255,255,0.02)">
+          <h2 style="margin:0 0 10px;font-size:14px;">Rendimiento por hora de envío</h2>
+          <div class="chartBox"><div class="chartBox"><canvas id="chartHour"></canvas></div></div>
+          <p class="small muted">La franja <b>10:00–12:00</b> es históricamente la que mejor convierte en campañas de ocio/actividad (familias) cuando el CTA requiere decisión y acción inmediata.</p>
+        </div>
+
+        <div class="panel" style="padding:14px;border-radius:18px;background:rgba(255,255,255,0.02)">
+          <h2 style="margin:0 0 10px;font-size:14px;">Distribución de CTR por campaña</h2>
+          <div class="chartBox"><div class="chartBox"><canvas id="chartCtrDist"></canvas></div></div>
+          <p class="small muted">Si “casi todo” cae por debajo de un umbral (p.ej. 1%), el problema suele ser <b>propuesta/creatividad</b>, no solo hora o frecuencia.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid" style="margin-top:14px;">
+    <div class="panel">
+      <h2>Comparativa por tipo de mensaje (campañas “main”)</h2>
+      <p>Clasificación automática por patrones en nombre/asunto (Black Friday, Sorteo, Urgencia, Lanzamiento…).</p>
+      <div class="chartBox xl"><div class="chartBox"><canvas id="chartByCategory"></canvas></div></div>
+    </div>
+
+    <div class="panel">
+      <h2>Tabla rápida (para dirección)</h2>
+      <p>Top (y “red flags”) con contexto. *Envíos masivos = ≥ 2.000 destinatarios.</p>
+      <table class="table" id="tblHighlights"></table>
+      <div class="footer">
+        <b>Notas:</b> (1) Los segmentos de “acertantes”/“no acertantes” pueden tener tasas altísimas por ser hiper-relevantes, pero no deben usarse para evaluar el rendimiento global del campus. 
+        (2) CTR aquí es “tasa de clicks” (Mailchimp). 
+        (3) Si tenéis conversiones/ventas, lo ideal es acompañar este reporte con <span class="pill">UTMs</span> y un embudo en GA4.
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" style="margin-top:14px;">
+    <h2>Recomendaciones accionables (sin reescribir nada ahora)</h2>
+    <div id="actions" class="small"></div>
+  </section>
+
+</div>
+
+<script>
+  const DATA_2526 = [{"name": "DESCUENTO ACERTANTES PSG", "subject": "¡Enhorabuena por acertar el resultado! Aquí tienes tu bono descuento", "date_str": "2025-12-11", "time": "10:30 am", "hour": 10.5, "recipients": 4, "open": 0.0, "ctr": 0.0, "unsub": 0, "cat": "Descuento"}, {"name": "DESCUENTO ACERTANTES PSG (Recordatorio)", "subject": "¡Últimas horas para activar tu descuento en AC Campus!", "date_str": "2025-12-14", "time": "12:00 pm", "hour": 12.0, "recipients": 4, "open": 0.0, "ctr": 0.0, "unsub": 0, "cat": "Urgencia/Últimas"}, {"name": "AC CAMPUS NAVIDAD - Regala 2do turno (envío 22 diciembre)", "subject": "🎁 El mejor regalo para estas Navidades", "date_str": "2025-12-22", "time": "7:00 pm", "hour": 19.0, "recipients": 3709, "open": 0.25, "ctr": 0.013, "unsub": 14, "cat": "Regala"}, {"name": "AC CAMPUS - Últimas Plazas (envío 18 dic)", "subject": "⏳ Últimas plazas para AC Campus Navidad", "date_str": "2025-12-18", "time": "7:30 pm", "hour": 19.5, "recipients": 11325, "open": 0.13, "ctr": 0.0065, "unsub": 30, "cat": "Urgencia/Últimas"}, {"name": "BLACK FRIDAY 3", "subject": "🏃 Últimos días de descuento en AC CAMPUS para estas navidades!", "date_str": "2025-11-28", "time": "2:30 pm", "hour": 14.5, "recipients": 11178, "open": 0.13, "ctr": 0.0054, "unsub": 29, "cat": "Black Friday"}, {"name": "LANZAMIENTO AC CAMPUS (ÚLTIMAS HORAS)", "subject": "¡Últimas horas de oferta en AC CAMPUS!", "date_str": "2025-10-30", "time": "11:36 am", "hour": 11.6, "recipients": 11112, "open": 0.136, "ctr": 0.01, "unsub": 17, "cat": "Lanzamiento"}, {"name": "REGALA AC CAMPUS", "subject": "🎄 Las navidades se acercan a Lezama con AC CAMPUS", "date_str": "2025-12-12", "time": "12:30 pm", "hour": 12.5, "recipients": 1137, "open": 0.141, "ctr": 0.0095, "unsub": 37, "cat": "Regala"}, {"name": "BLACK FRIDAY 1", "subject": "🛍️ ¡Las ofertas de Black Friday han llegado a AC CAMPUS!", "date_str": "2025-11-20", "time": "12:06 pm", "hour": 12.1, "recipients": 11214, "open": 0.144, "ctr": 0.013, "unsub": 24, "cat": "Black Friday"}, {"name": "DESCUENTO AC CAMPUS PRO", "subject": "🌐 Elige AC CAMPUS PRO para mejorar en navidad con este descuento", "date_str": "2025-12-02", "time": "12:15 pm", "hour": 12.25, "recipients": 2659, "open": 0.149, "ctr": 0.011, "unsub": 12, "cat": "Producto PRO"}, {"name": "AC CAMPUS (ÚLTIMOS DÍAS)", "subject": "⚽ Celebra un Athletic de Champions con esta oferta de lanzamiento en AC CAMPUS", "date_str": "2025-10-24", "time": "12:31 pm", "hour": 12.516666666666667, "recipients": 11103, "open": 0.161, "ctr": 0.017, "unsub": 12, "cat": "Lanzamiento"}, {"name": "Sorteo NEWCASTLE UNITED - ATHLETIC CLUB", "subject": "🎟️ ¡Acierta el resultado del Newcastle United - Athletic Club y gana una plaza para AC CAMPUS!", "date_str": "2025-11-05", "time": "10:30 am", "hour": 10.5, "recipients": 11065, "open": 0.161, "ctr": 0.049, "unsub": 12, "cat": "Sorteo/Concurso"}, {"name": "LANZAMIENTO AC CAMPUS", "subject": "¡Vive unas navidades de Champions en Lezama con AC CAMPUS!", "date_str": "2025-10-17", "time": "12:05 pm", "hour": 12.083333333333334, "recipients": 11100, "open": 0.175, "ctr": 0.026, "unsub": 18, "cat": "Lanzamiento"}, {"name": "DESCUENTO RESTO PSG (Recordatorio)", "subject": "📸 ¡Últimas horas para activar tu descuento en AC Campus!", "date_str": "2025-12-14", "time": "12:00 pm", "hour": 12.0, "recipients": 124, "open": 0.197, "ctr": 0.0085, "unsub": 0, "cat": "Urgencia/Últimas"}, {"name": "BLACK FRIDAY 4 (últimashoras)", "subject": "🌀 ¡El Black Friday en AC CAMPUS está a punto de terminar!", "date_str": "2025-12-01", "time": "11:45 am", "hour": 11.75, "recipients": 5200, "open": 0.221, "ctr": 0.012, "unsub": 20, "cat": "Black Friday"}, {"name": "BLACK FRIDAY 2", "subject": "🛍️ ¡20€ de descuento para AC CAMPUS estas navidades!", "date_str": "2025-11-25", "time": "7:30 pm", "hour": 19.5, "recipients": 3522, "open": 0.247, "ctr": 0.01, "unsub": 7, "cat": "Black Friday"}, {"name": "DESCUENTO RESTO NEWCASTLE (Recordatorio)", "subject": "📸 ¡Últimas horas para activar tu descuento en AC Campus!", "date_str": "2025-11-09", "time": "12:00 pm", "hour": 12.0, "recipients": 640, "open": 0.277, "ctr": 0.024, "unsub": 1, "cat": "Urgencia/Últimas"}, {"name": "AC CAMPUS (ÚLTIMOS DÍAS 2)", "subject": "⚽ La oferta de lanzamiento de AC CAMPUS está a punto de finalizar", "date_str": "2025-10-27", "time": "5:45 pm", "hour": 17.75, "recipients": 3359, "open": 0.293, "ctr": 0.026, "unsub": 8, "cat": "Lanzamiento"}, {"name": "DESCUENTO ACERTANTES NEWCASTLE (Recordatorio)", "subject": "📸 ¡Últimas horas para activar tu descuento en AC Campus!", "date_str": "2025-11-09", "time": "12:00 pm", "hour": 12.0, "recipients": 51, "open": 0.333, "ctr": 0.02, "unsub": 0, "cat": "Urgencia/Últimas"}, {"name": "DESCUENTO RESTO PSG", "subject": "📸 No has acertado el resultado, pero aquí tienes un bono descuento", "date_str": "2025-12-11", "time": "10:30 am", "hour": 10.5, "recipients": 125, "open": 0.347, "ctr": 0.025, "unsub": 0, "cat": "Descuento"}, {"name": "DESCUENTO RESTO NEWCASTLE", "subject": "📸 No has acertado el resultado, pero aquí tienes un bono descuento", "date_str": "2025-11-06", "time": "1:58 pm", "hour": 13.966666666666667, "recipients": 645, "open": 0.468, "ctr": 0.039, "unsub": 0, "cat": "Descuento"}, {"name": "DESCUENTO ACERTANTES NEWCASTLE", "subject": "📸 ¡Enhorabuena por acertar el resultado! Aquí tienes tu bono descuento", "date_str": "2025-11-06", "time": "1:58 pm", "hour": 13.966666666666667, "recipients": 53, "open": 0.712, "ctr": 0.365, "unsub": 0, "cat": "Descuento"}];
+  const DATA_2425 = [{"name": "LANZAMIENTO AC CAMPUS NAVIDAD 2024", "subject": "🎯 Entrena en Lezama estas navidades con AC Campus \"UNIQUE IN THE WORLD\"", "date_str": "2024-10-28", "time": "8:00 pm", "hour": 20.0, "recipients": 6528, "open": 0.331, "ctr": 0.077, "unsub": 16, "cat": "Lanzamiento"}, {"name": "MAIL 2 AC CAMPUS NAVIDAD 24/25", "subject": "⚠️ ¡Últimos días de oferta de lanzamiento en AC CAMPUS Navidad UNIQUE IN THE WORLD!", "date_str": "2024-10-31", "time": "11:46 am", "hour": 11.766666666666667, "recipients": 7597, "open": 0.28, "ctr": 0.035, "unsub": 6, "cat": "Lanzamiento"}, {"name": "ÚLTIMAS HORAS AC CAMPUS NAVIDAD 24/25", "subject": "⚠️ ¡Últimas horas! Ven a AC CAMPUS Navidad a un precio especial", "date_str": "2024-11-03", "time": "11:15 am", "hour": 11.25, "recipients": 7607, "open": 0.312, "ctr": 0.034, "unsub": 7, "cat": "Urgencia/Últimas"}, {"name": "SORTEO ATHLETIC-CELTA COMUNIDAD AC CAMPUS (copy 01)", "subject": "🎟️ ¡Sorteamos una plaza de AC CAMPUS NAVIDAD!", "date_str": "2024-11-06", "time": "11:30 am", "hour": 11.5, "recipients": 7700, "open": 0.391, "ctr": 0.192, "unsub": 9, "cat": "Sorteo/Concurso"}, {"name": "DESCUENTO GENERAL LUDOGORETS", "subject": "📸 ¡Bono descuento para AC CAMPUS NAVIDAD! Solo 24 horas", "date_str": "2024-11-07", "time": "8:55 pm", "hour": 20.916666666666668, "recipients": 1047, "open": 0.618, "ctr": 0.246, "unsub": 0, "cat": "Descuento"}, {"name": "DESCUENTO GANADORES LUDOGORETS", "subject": "📸 ¡Enhorabuena por acertar el resultado! Aquí tienes tu bono descuento", "date_str": "2024-11-08", "time": "10:14 am", "hour": 10.233333333333333, "recipients": 453, "open": 0.735, "ctr": 0.36, "unsub": 0, "cat": "Sorteo/Concurso"}, {"name": "RECORDATORIO: DESCUENTO GENERAL LUDOGORETS", "subject": "📸 ¡Últimas horas para aprovechar tu bono descuento para AC CAMPUS NAVIDAD!", "date_str": "2024-11-08", "time": "5:45 pm", "hour": 17.75, "recipients": 710, "open": 0.528, "ctr": 0.077, "unsub": 0, "cat": "Producto PRO"}, {"name": "AC CAMPUS PRO 1 (copy 01)", "subject": "AC CAMPUS PRO: Prepárate en Lezama estas navidades", "date_str": "2024-11-19", "time": "8:00 pm", "hour": 20.0, "recipients": 4749, "open": 0.267, "ctr": 0.043, "unsub": 2, "cat": "Producto PRO"}, {"name": "Sorteo Athletic Club vs IF Elfsborg", "subject": "🎟️ ¡Sorteamos una plaza de AC CAMPUS NAVIDAD!", "date_str": "2024-11-26", "time": "11:42 am", "hour": 11.7, "recipients": 8050, "open": 0.278, "ctr": 0.153, "unsub": 6, "cat": "Sorteo/Concurso"}, {"name": "AC CAMPUS NAVIDAD BLACK FRIDAY", "subject": "🛍️ ¡El Black Friday ha llegado a AC CAMPUS Navidad!", "date_str": "2024-11-27", "time": "8:00 pm", "hour": 20.0, "recipients": 8028, "open": 0.225, "ctr": 0.057, "unsub": 6, "cat": "Black Friday"}, {"name": "DESCUENTO GANADORES ELFSBORG", "subject": "📸 ¡Enhorabuena por acertar el resultado! Aquí tienes tu bono descuento", "date_str": "2024-11-29", "time": "12:15 pm", "hour": 12.25, "recipients": 165, "open": 0.642, "ctr": 0.261, "unsub": 0, "cat": "Sorteo/Concurso"}, {"name": "AC CAMPUS NAVIDAD BLACK FRIDAY 2 (ÚLTIMOS DÍAS)", "subject": "🛍️ ¡El Black Friday ha llegado a AC CAMPUS Navidad!", "date_str": "2024-11-29", "time": "12:21 pm", "hour": 12.35, "recipients": 2733, "open": 0.306, "ctr": 0.044, "unsub": 2, "cat": "Black Friday"}, {"name": "AC CAMPUS NAVIDAD BLACK FRIDAY 2 (ÚLTIMAS HORAS)", "subject": "¡Últimas horas de precio especial en AC CAMPUS!", "date_str": "2024-12-02", "time": "4:15 pm", "hour": 16.25, "recipients": 8184, "open": 0.182, "ctr": 0.021, "unsub": 6, "cat": "Black Friday"}, {"name": "DESCUENTO NO ACERTANTES ELFSBORG", "subject": "📸 ¡Bono descuento para AC CAMPUS NAVIDAD! Solo 24 horas", "date_str": "2024-12-03", "time": "11:30 am", "hour": 11.5, "recipients": 1115, "open": 0.423, "ctr": 0.126, "unsub": 1, "cat": "Descuento"}, {"name": "Sorteo FENERBAHCE SK VS ATHLETIC CLUB", "subject": "🎟️ ¡Sorteamos una plaza de AC CAMPUS NAVIDAD!", "date_str": "2024-12-11", "time": "10:15 am", "hour": 10.25, "recipients": 8172, "open": 0.246, "ctr": 0.123, "unsub": 3, "cat": "Sorteo/Concurso"}, {"name": "DESCUENTO NO ACERTANTES FENERBAHÇE", "subject": "📸 ¡Bono descuento para AC CAMPUS NAVIDAD! Solo 24 horas", "date_str": "2024-12-12", "time": "10:30 am", "hour": 10.5, "recipients": 903, "open": 0.487, "ctr": 0.073, "unsub": 1, "cat": "Descuento"}, {"name": "DESCUENTO GANADORES FENERBAHÇE", "subject": "📸 ¡Enhorabuena por acertar el resultado! Aquí tienes tu bono descuento", "date_str": "2024-12-12", "time": "10:30 am", "hour": 10.5, "recipients": 100, "open": 0.596, "ctr": 0.253, "unsub": 0, "cat": "Sorteo/Concurso"}, {"name": "AC CAMPUS NAVIDAD ÚLTIMAS PLAZAS", "subject": "¡Últimas plazas en AC CAMPUS Navidad!", "date_str": "2024-12-12", "time": "7:45 pm", "hour": 19.75, "recipients": 8305, "open": 0.169, "ctr": 0.015, "unsub": 7, "cat": "Urgencia/Últimas"}, {"name": "AC CAMPUS NAVIDAD ÚLTIMOS DÍAS", "subject": "¡No te quedes sin tu plaza en AC CAMPUS Navidad!", "date_str": "2024-12-15", "time": "11:00 am", "hour": 11.0, "recipients": 2516, "open": 0.283, "ctr": 0.027, "unsub": 5, "cat": "Urgencia/Últimas"}, {"name": "AC CAMPUS NAVIDAD ÚLTIMA OPORTUNIDAD", "subject": "¡Última oportunidad para entrenar con AC CAMPUS estas navidades!", "date_str": "2024-12-19", "time": "7:45 pm", "hour": 19.75, "recipients": 8305, "open": 0.171, "ctr": 0.013, "unsub": 7, "cat": "Urgencia/Últimas"}, {"name": "AC CAMPUS NAVIDAD 2º TURNO", "subject": "¡Aún estás a tiempo de regalar AC CAMPUS! 🎁", "date_str": "2024-12-23", "time": "8:00 pm", "hour": 20.0, "recipients": 2908, "open": 0.296, "ctr": 0.017, "unsub": 2, "cat": "Regala"}, {"name": "AC CAMPUS NAVIDAD ÚLTIMAS PLAZAS 2º TURNO", "subject": "¡Últimas plazas para el segundo turno de AC CAMPUS!", "date_str": "2024-12-26", "time": "7:30 pm", "hour": 19.5, "recipients": 2032, "open": 0.293, "ctr": 0.021, "unsub": 4, "cat": "Urgencia/Últimas"}];
+  const KPIS = {"25-26": {"emails": 21, "recipients": 99329, "open_w": 0.16764214881857262, "ctr_w": 0.017605051898237172, "unsub_rate": 0.0024262803410887053, "avg_gap_days_main": 6.0}, "24-25": {"emails": 22, "recipients": 97907, "open_w": 0.273156995924704, "ctr_w": 0.06985179813496481, "unsub_rate": 0.0009192396866414046, "avg_gap_days_main": 4.214285714285714}, "deltas": {"open_pp": -10.551484710613138, "ctr_pp": -5.2246746236727635, "unsub_pp": 0.15070406544473006}};
+
+  const fmtPct = (x) => (x*100).toFixed(2) + "%";
+  const fmtInt = (x) => x.toLocaleString("es-ES");
+  const pp = (x) => (x>=0?"+":"") + x.toFixed(2) + " pp";
+  const IS_MOBILE = window.matchMedia("(max-width: 640px)").matches;
+
+  function main(df) {
+    return df.filter(r => r.recipients >= 2000);
+  }
+
+  function byWeek(df) {
+    const map = new Map();
+    for (const r of df) {
+      const d = new Date(r.date_str + "T00:00:00");
+      const day = (d.getDay()+6)%7;
+      const monday = new Date(d); monday.setDate(d.getDate()-day);
+      const key = monday.toISOString().slice(0,10);
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(r);
+    }
+    const keys = Array.from(map.keys()).sort();
+    return keys.map(k => {
+      const arr = map.get(k);
+      const tot = arr.reduce((a,x)=>a+x.recipients,0);
+      const openW = arr.reduce((a,x)=>a+x.open*x.recipients,0)/tot;
+      const ctrW = arr.reduce((a,x)=>a+x.ctr*x.recipients,0)/tot;
+      return { week:k, openW, ctrW, tot };
+    });
+  }
+
+  function topN(df, key, n=5) { return [...df].sort((a,b)=>b[key]-a[key]).slice(0,n); }
+  function bottomN(df, key, n=5) { return [...df].sort((a,b)=>a[key]-b[key]).slice(0,n); }
+
+  // KPI cards
+  const kpiRow = document.getElementById("kpiRow");
+  const open25 = KPIS["25-26"].open_w, open24 = KPIS["24-25"].open_w;
+  const ctr25  = KPIS["25-26"].ctr_w,  ctr24  = KPIS["24-25"].ctr_w;
+  const unsub25 = KPIS["25-26"].unsub_rate, unsub24 = KPIS["24-25"].unsub_rate;
+
+  
+  const cards = [
+    {
+      label: "Emails enviados",
+      now: { tag: "25/26", value: `${fmtInt(KPIS["25-26"].emails)}` },
+      prev:{ tag: "24/25", value: `${fmtInt(KPIS["24-25"].emails)}` },
+      deltaLabel: `Frecuencia media (envíos masivos ≥2.000): ${KPIS["25-26"].avg_gap_days_main.toFixed(1)} días vs ${KPIS["24-25"].avg_gap_days_main.toFixed(1)} días`,
+      deltaPill: "info"
+    },
+    {
+      label: "Apertura (ponderada)",
+      now: { tag: "25/26", value: `${fmtPct(open25)}` },
+      prev:{ tag: "24/25", value: `${fmtPct(open24)}` },
+      deltaLabel: `${pp(KPIS.deltas.open_pp)}`,
+      deltaPill: (KPIS.deltas.open_pp>=0 ? "mejora":"caída"),
+      deltaClass: (KPIS.deltas.open_pp>=0 ? "good":"bad")
+    },
+    {
+      label: "Clicks (ponderado)",
+      now: { tag: "25/26", value: `${fmtPct(ctr25)}` },
+      prev:{ tag: "24/25", value: `${fmtPct(ctr24)}` },
+      deltaLabel: `${pp(KPIS.deltas.ctr_pp)}`,
+      deltaPill: (KPIS.deltas.ctr_pp>=0 ? "mejora":"caída"),
+      deltaClass: (KPIS.deltas.ctr_pp>=0 ? "good":"bad")
+    },
+    {
+      label: "Bajas (ponderado)",
+      now: { tag: "25/26", value: `${fmtPct(unsub25)}` },
+      prev:{ tag: "24/25", value: `${fmtPct(unsub24)}` },
+      deltaLabel: `${pp(KPIS.deltas.unsub_pp)}`,
+      deltaPill: (KPIS.deltas.unsub_pp<=0 ? "mejora":"alerta"),
+      deltaClass: (KPIS.deltas.unsub_pp<=0 ? "good":"bad")
+    },
+  ];
+
+  kpiRow.innerHTML = cards.map(c => `
+    <div class="card">
+      <div class="label">${c.label}</div>
+
+      <div class="kpiCompare">
+        <div class="kpiLine">
+          <span class="kpiTag now">${c.now.tag}</span>
+          <strong>${c.now.value}</strong>
+        </div>
+        <div class="kpiLine">
+          <span class="kpiTag prev">${c.prev.tag}</span>
+          <strong style="opacity:.85;font-weight:650">${c.prev.value}</strong>
+        </div>
+      </div>
+
+      <div class="delta" style="margin-top:10px;">
+        <span class="pill ${(c.deltaClass||"")}">${c.deltaPill || "info"}</span>
+        <span>${c.deltaLabel}</span>
+      </div>
+    </div>
+  `).join("");
+
+  // Executive summary
+  const exec = document.getElementById("execSummary");
+  exec.innerHTML = `
+    <ul>
+      <li><b>Caída fuerte interanual:</b> apertura ponderada ${fmtPct(open24)} → ${fmtPct(open25)} (${pp(KPIS.deltas.open_pp)}), y CTR ${fmtPct(ctr24)} → ${fmtPct(ctr25)} (${pp(KPIS.deltas.ctr_pp)}).</li>
+      <li><b>El “motor” de clicks en 24/25 fueron los sorteos</b> (CTR muy alto y sostenido). En 25/26 solo hay un gran sorteo y aun así rinde (CTR ~4,9%), pero el resto de envíos masivos se mueven en torno a <b>0,5%–1,7%</b>.</li>
+      <li><b>Señal de fatiga / baja relevancia:</b> las bajas suben (ponderado) y hay un caso extremo: “REGALA AC CAMPUS” con ~3,25% de bajas sobre un segmento de 1.137.</li>
+      <li><b>Hora de envío:</b> en ambos años la franja <b>10:00–12:00</b> es la mejor para CTR en envíos masivos; noche mantiene aperturas pero no empuja acción.</li>
+    </ul>
+  `;
+
+  // Diagnostic block
+  const diag = document.getElementById("diagnostic");
+  diag.innerHTML = `
+    <h3 style="margin:0 0 8px;font-size:13px;color:rgba(255,255,255,0.88)">Qué funcionó mejor</h3>
+    <ul>
+      <li><b>Mensajes con “evento”/juego (sorteo + partido):</b> en 24/25 los sorteos (Athletic–Celta / Elfsborg / Fenerbahçe) sostienen CTR alto; en 25/26 el sorteo “Newcastle–Athletic” es el <b>#1 en clicks</b> dentro de envíos masivos.</li>
+      <li><b>Segmentación hiper-relevante:</b> los emails de “acertantes” y “no acertantes” (segmentos pequeños) tienen tasas altísimas por ser 1:1 con el interés del usuario.</li>
+      <li><b>Urgencia “real” + oferta clara:</b> en 24/25 “Bono descuento… Solo 24 horas” rinde mucho, sobre todo cuando el público está calentito (fase media de campaña).</li>
+    </ul>
+
+    <h3 style="margin:12px 0 8px;font-size:13px;color:rgba(255,255,255,0.88)">Qué funcionó peor (25/26)</h3>
+    <ul>
+      <li><b>Black Friday “genérico”:</b> 4 envíos y CTR ponderado muy bajo (~1%). Señal típica de saturación: asunto con emoji + “Black Friday” sin una propuesta diferencial potente.</li>
+      <li><b>Asuntos repetidos / plantilla mental repetida:</b> muchos asuntos orbitan “últimas horas / oferta / descuento”. Esto sube aperturas puntuales, pero no empuja clicks si el usuario siente que “ya lo he visto”.</li>
+      <li><b>Desalineación asunto → landing:</b> cuando el asunto promete algo concreto (p.ej. “20€ de descuento”) el CTA debe llevar a una landing extremadamente directa y pre-filtrada. Si no, se desploma el CTR.</li>
+    </ul>
+  `;
+
+  // Prepare chart data
+  const M25 = main(DATA_2526);
+  const M24 = main(DATA_2425);
+
+  const weekly25 = byWeek(M25);
+  const weekly24 = byWeek(M24);
+  const allWeeks = Array.from(new Set([...weekly24.map(x=>x.week), ...weekly25.map(x=>x.week)])).sort();
+
+  const series = (weeks, key) => allWeeks.map(w => (weeks.find(x=>x.week===w)?.[key] ?? null));
+
+  new Chart(document.getElementById("chartWeeklyCtr"), {
+    type: "line",
+    data: {
+      labels: allWeeks,
+      datasets: [
+        { label: "CTR 24/25 ", data: series(weekly24,"ctrW"), tension: 0.25 },
+        { label: "CTR 25/26 ", data: series(weekly25,"ctrW"), tension: 0.25 },
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: "rgba(255,255,255,0.75)" } },
+        tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${(ctx.parsed.y*100).toFixed(2)}%` } }
+      },
+      scales: {
+        x: { ticks: { color: "rgba(255,255,255,0.55)" } },
+        y: { ticks: { color: "rgba(255,255,255,0.55)", callback:(v)=> (v*100).toFixed(1)+"%" }, grid: { color:"rgba(255,255,255,0.08)" } }
+      }
+    }
+  });
+
+  // Top charts (25/26 main)
+  const topOpen = topN(M25, "open", 5);
+  const topCtr  = topN(M25, "ctr", 5);
+
+  const shorten = (s) => s.length>32 ? s.slice(0,32)+"…" : s;
+
+  new Chart(document.getElementById("chartTopOpen"), {
+    type: "bar",
+    data: { labels: topOpen.map(r => shorten(r.name)), datasets: [{ label: "Tasa de apertura", data: topOpen.map(r=>r.open) }] },
+    options: {
+      indexAxis: IS_MOBILE ? 'y' : 'x',
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display:false },
+        tooltip: { callbacks: { label:(c)=> `${(c.parsed.y*100).toFixed(1)}% · ${fmtInt(topOpen[c.dataIndex].recipients)} destinatarios` } }
+      },
+      
+scales: IS_MOBILE ? {
+  x: {
+    ticks: { color: "rgba(255,255,255,0.55)", callback:(v)=> (v*100).toFixed(0)+"%" },
+    grid: { color:"rgba(255,255,255,0.08)" }
+  },
+  y: {
+    ticks: {
+      color: "rgba(255,255,255,0.55)",
+      autoSkip: false,
+      callback: function(v){
+        const txt = this.getLabelForValue(v) || "";
+        const max = 22;
+        return txt.length>max ? txt.slice(0,max)+"…" : txt;
+      }
+    },
+    grid: { color:"rgba(255,255,255,0.08)" }
+  }
+} : {
+  x: {
+    ticks: {
+      color: "rgba(255,255,255,0.55)",
+      maxRotation: 35,
+      minRotation: 35,
+      callback: function(v){
+        const txt = this.getLabelForValue(v) || "";
+        const max = 18;
+        return txt.length>max ? txt.slice(0,max)+"…" : txt;
+      }
+    },
+    grid: { color:"rgba(255,255,255,0.08)" }
+  },
+  y: {
+    ticks: { color: "rgba(255,255,255,0.55)", callback:(v)=> (v*100).toFixed(0)+"%" },
+    grid: { color:"rgba(255,255,255,0.08)" }
+  }
+}
+    }
+  });
+
+  new Chart(document.getElementById("chartTopCtr"), {
+    type: "bar",
+    data: { labels: topCtr.map(r => shorten(r.name)), datasets: [{ label: "Tasa de clicks", data: topCtr.map(r=>r.ctr) }] },
+    options: {
+      indexAxis: IS_MOBILE ? 'y' : 'x',
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display:false },
+        tooltip: { callbacks: { label:(c)=> `${(c.parsed.y*100).toFixed(2)}% · ${fmtInt(topCtr[c.dataIndex].recipients)} destinatarios` } }
+      },
+      
+scales: IS_MOBILE ? {
+  x: {
+    ticks: { color: "rgba(255,255,255,0.55)", callback:(v)=> (v*100).toFixed(0)+"%" },
+    grid: { color:"rgba(255,255,255,0.08)" }
+  },
+  y: {
+    ticks: {
+      color: "rgba(255,255,255,0.55)",
+      autoSkip: false,
+      callback: function(v){
+        const txt = this.getLabelForValue(v) || "";
+        const max = 22;
+        return txt.length>max ? txt.slice(0,max)+"…" : txt;
+      }
+    },
+    grid: { color:"rgba(255,255,255,0.08)" }
+  }
+} : {
+  x: {
+    ticks: {
+      color: "rgba(255,255,255,0.55)",
+      maxRotation: 35,
+      minRotation: 35,
+      callback: function(v){
+        const txt = this.getLabelForValue(v) || "";
+        const max = 18;
+        return txt.length>max ? txt.slice(0,max)+"…" : txt;
+      }
+    },
+    grid: { color:"rgba(255,255,255,0.08)" }
+  },
+  y: {
+    ticks: { color: "rgba(255,255,255,0.55)", callback:(v)=> (v*100).toFixed(0)+"%" },
+    grid: { color:"rgba(255,255,255,0.08)" }
+  }
+}
+    }
+  });
+
+  // Hour performance (bucket)
+  function slot(hour) {
+    if (hour==null || Number.isNaN(hour)) return "otros";
+    if (hour>=6 && hour<10) return "06–10";
+    if (hour>=10 && hour<12) return "10–12";
+    if (hour>=12 && hour<15) return "12–15";
+    if (hour>=15 && hour<18) return "15–18";
+    if (hour>=18 && hour<22) return "18–22";
+    return "otros";
+  }
+  function slotAgg(df) {
+    const slots = ["06–10","10–12","12–15","15–18","18–22","otros"];
+    const out = new Map(slots.map(s=>[s, {tot:0, ctr:0}]));
+    for (const r of df) {
+      const s = slot(r.hour);
+      const o = out.get(s);
+      o.tot += r.recipients;
+      o.ctr  += r.ctr*r.recipients;
+    }
+    return slots.map(s => {
+      const o = out.get(s);
+      return { slot:s, ctrW: o.tot? o.ctr/o.tot : null, tot:o.tot };
+    });
+  }
+
+  const slot25 = slotAgg(M25);
+  const slot24 = slotAgg(M24);
+
+  new Chart(document.getElementById("chartHour"), {
+    type: "bar",
+    data: {
+      labels: slot25.map(x=>x.slot),
+      datasets: [
+        { label: "CTR 24/25", data: slot24.map(x=>x.ctrW) },
+        { label: "CTR 25/26", data: slot25.map(x=>x.ctrW) },
+      ]
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: { legend: { labels: { color:"rgba(255,255,255,0.75)" } },
+                 tooltip: { callbacks: { label:(c)=>`${c.dataset.label}: ${(c.parsed.y*100).toFixed(2)}%` } } },
+      scales: {
+        x: { ticks: { color: "rgba(255,255,255,0.55)" } },
+        y: { ticks: { color: "rgba(255,255,255,0.55)", callback:(v)=> (v*100).toFixed(0)+"%" }, grid: { color:"rgba(255,255,255,0.08)" } }
+      }
+    }
+  });
+
+  // CTR distribution (hist)
+  function hist(values, bins) {
+    const min = Math.min(...values), max = Math.max(...values);
+    const step = (max-min)/bins || 1;
+    const counts = Array(bins).fill(0);
+    const labels = Array(bins).fill(0).map((_,i)=> {
+      const a = min + i*step;
+      const b = min + (i+1)*step;
+      return `${(a*100).toFixed(1)}–${(b*100).toFixed(1)}%`;
+    });
+    for (const v of values) {
+      const idx = Math.min(bins-1, Math.floor((v-min)/step));
+      counts[idx] += 1;
+    }
+    return {labels, counts};
+  }
+  const hist25 = hist(M25.map(r=>r.ctr), 8);
+  const hist24 = hist(M24.map(r=>r.ctr), 8);
+
+  new Chart(document.getElementById("chartCtrDist"), {
+    type: "bar",
+    data: {
+      labels: hist25.labels,
+      datasets: [
+        { label:"# campañas 24/25 ", data: hist24.counts },
+        { label:"# campañas 25/26 ", data: hist25.counts },
+      ]
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: { legend: { labels: { color:"rgba(255,255,255,0.75)" } } },
+      scales: {
+        x: { ticks: { color: "rgba(255,255,255,0.55)", maxRotation: 0, autoSkip: true } },
+        y: { ticks: { color: "rgba(255,255,255,0.55)", precision:0 }, grid: { color:"rgba(255,255,255,0.08)" } }
+      }
+    }
+  });
+
+  // Category chart
+  function catAgg(df) {
+    const map = new Map();
+    for (const r of df) {
+      const c = r.cat || "Otros";
+      if (!map.has(c)) map.set(c, []);
+      map.get(c).push(r);
+    }
+    const cats = Array.from(map.keys()).sort((a,b)=> map.get(b).reduce((s,x)=>s+x.recipients,0) - map.get(a).reduce((s,x)=>s+x.recipients,0));
+    return cats.map(c => {
+      const arr = map.get(c);
+      const tot = arr.reduce((s,x)=>s+x.recipients,0);
+      const ctrW  = arr.reduce((s,x)=>s+x.ctr*x.recipients,0)/tot;
+      return {cat:c, ctrW, tot};
+    });
+  }
+  const cat25 = catAgg(M25);
+  const cat24 = catAgg(M24);
+  const catAll = Array.from(new Set([...cat24.map(x=>x.cat), ...cat25.map(x=>x.cat)]));
+
+  function catSeries(catArr) {
+    const map = new Map(catArr.map(x=>[x.cat,x]));
+    return catAll.map(c => map.get(c)?.ctrW ?? null);
+  }
+
+  new Chart(document.getElementById("chartByCategory"), {
+    type: "bar",
+    data: {
+      labels: catAll,
+      datasets: [
+        { label:"CTR 24/25 ", data: catSeries(cat24) },
+        { label:"CTR 25/26 ", data: catSeries(cat25) },
+      ]
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color:"rgba(255,255,255,0.75)" } },
+        tooltip: { callbacks: { label:(c)=> `${c.dataset.label}: ${(c.parsed.y*100).toFixed(2)}%` } }
+      },
+      scales: {
+        x: { ticks: { color: "rgba(255,255,255,0.55)", autoSkip: true, maxRotation: IS_MOBILE ? 50 : 0, minRotation: IS_MOBILE ? 50 : 0 } },
+        y: { ticks: { color: "rgba(255,255,255,0.55)", callback:(v)=> (v*100).toFixed(0)+"%" }, grid: { color:"rgba(255,255,255,0.08)" } }
+      }
+    }
+  });
+
+  // Highlights table
+  const tbl = document.getElementById("tblHighlights");
+  const bestOpenMain25 = topN(M25,"open",3);
+  const bestCtrMain25  = topN(M25,"ctr",3);
+  const worstCtrMain25 = bottomN(M25,"ctr",3);
+
+  const rowHtml = (r, badgeHtml) => `
+      <tr>
+        <td><b>${r.name}</b><div class="muted">${r.date_str} · ${r.time} · ${fmtInt(r.recipients)} destinatarios</div></td>
+        <td>${badgeHtml}</td>
+        <td>${(r.open*100).toFixed(1)}%</td>
+        <td>${(r.ctr*100).toFixed(2)}%</td>
+      </tr>
+  `;
+
+  tbl.innerHTML = `
+    <thead>
+      <tr>
+        <th>Campaña</th>
+        <th>Etiqueta</th>
+        <th>Apertura</th>
+        <th>Clicks</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${bestOpenMain25.map(r=>rowHtml(r, '<span class="pill good">top aperturas</span>')).join("")}
+      ${bestCtrMain25.map(r=>rowHtml(r, '<span class="pill good">top clicks</span>')).join("")}
+      ${worstCtrMain25.map(r=>rowHtml(r, '<span class="pill bad">red flag</span>')).join("")}
+    </tbody>
+  `;
+
+  // Actions
+  const actions = document.getElementById("actions");
+  actions.innerHTML = `
+    <ol>
+      <li><b>Repetir el “motor sorteo” (lo que más empuja clicks):</b> en 24/25 los sorteos sostienen CTR alto. Si el objetivo es llenar plazas, este formato genera <b>tráfico</b> y “calienta” a la audiencia sin depender solo de descuento.</li>
+      <li><b>Reducir repetición semántica en asuntos (para la próxima):</b> demasiados “últimas horas/oferta/descuento” → el usuario lo filtra. Mantener <b>2–3 líneas creativas</b> (club/Lezama/experiencia) y alternarlas con la línea de urgencia.</li>
+      <li><b>Optimizar franja horaria para acción:</b> priorizar envíos masivos en <b>10:00–12:00</b> cuando se pide decisión. Noche puede reservarse para “awareness” o recordatorios suaves.</li>
+      <li><b>Control de bajas:</b> revisar el segmento usado en “REGALA AC CAMPUS” (3,25% de bajas). Señal típica de: público poco alineado, demasiada presión comercial o falta de expectativa de recibir este tipo de mensaje.</li>
+      <li><b>Audiencias:</b> separar claramente (a) leads “fríos” (awareness + sorteo), (b) interesados previos, (c) compradores/antiguos alumnos. La misma creatividad no puede servir igual a todos.</li>
+      <li><b>Medición:</b> estandarizar UTMs por campaña y un panel de GA4 con embudo: <span class="pill">open → click → landing engaged → checkout start → purchase</span>. Así el debate deja de ser “tasa de apertura” y pasa a ser “plazas vendidas”.</li>
+    </ol>
+  `;
+</script>
+</body>
+</html>
