@@ -318,9 +318,9 @@ canvas{
   <section class="hero">
     <h1>Informe de rendimiento — campañas de email</h1>
     <p class="subtitle">
-      Este reporte compara <b>dos campañas completas</b> de AC Campus Navidad. 
+      Este informe compara <b>dos campañas completas</b> de AC Campus Navidad. 
       Los KPIs principales están <b>ponderados por volumen de destinatarios</b> (para evitar que segmentos pequeños distorsionen la lectura).
-      Ingresos no incluidos (según petición).
+     
     </p>
 
     <div class="kpiRow" id="kpiRow"></div>
@@ -358,7 +358,7 @@ canvas{
         <div class="panel" style="padding:14px;border-radius:18px;background:rgba(255,255,255,0.02)">
           <h2 style="margin:0 0 10px;font-size:14px;">Rendimiento por hora de envío</h2>
           <div class="chartBox"><div class="chartBox"><canvas id="chartHour"></canvas></div></div>
-          <p class="small muted">La franja <b>10:00–12:00</b> es históricamente la que mejor convierte en campañas de ocio/actividad (familias) cuando el CTA requiere decisión y acción inmediata.</p>
+          <p class="small muted">Parece que la franja <b>10:00–12:00</b> es la que mejor convierte cuando el CTA requiere decisión y acción inmediata.</p>
         </div>
 
         <div class="panel" style="padding:14px;border-radius:18px;background:rgba(255,255,255,0.02)">
@@ -383,8 +383,8 @@ canvas{
       <table class="table" id="tblHighlights"></table>
       <div class="footer">
         <b>Notas:</b> (1) Los segmentos de “acertantes”/“no acertantes” pueden tener tasas altísimas por ser hiper-relevantes, pero no deben usarse para evaluar el rendimiento global del campus. 
-        (2) CTR aquí es “tasa de clicks” (Mailchimp). 
-        (3) Si tenéis conversiones/ventas, lo ideal es acompañar este reporte con <span class="pill">UTMs</span> y un embudo en GA4.
+        (2) Recordemos que CTR aquí es “tasa de clicks” (Mailchimp). 
+      
       </div>
     </div>
   </section>
@@ -500,7 +500,7 @@ canvas{
   const exec = document.getElementById("execSummary");
   exec.innerHTML = `
     <ul>
-      <li><b>Caída fuerte interanual:</b> apertura ponderada ${fmtPct(open24)} → ${fmtPct(open25)} (${pp(KPIS.deltas.open_pp)}), y CTR ${fmtPct(ctr24)} → ${fmtPct(ctr25)} (${pp(KPIS.deltas.ctr_pp)}).</li>
+      <li><b>Caída interanual:</b> apertura ponderada ${fmtPct(open24)} → ${fmtPct(open25)} (${pp(KPIS.deltas.open_pp)}), y CTR ${fmtPct(ctr24)} → ${fmtPct(ctr25)} (${pp(KPIS.deltas.ctr_pp)}).</li>
       <li><b>El “motor” de clicks en 24/25 fueron los sorteos</b> (CTR muy alto y sostenido). En 25/26 solo hay un gran sorteo y aun así rinde (CTR ~4,9%), pero el resto de envíos masivos se mueven en torno a <b>0,5%–1,7%</b>.</li>
       <li><b>Señal de fatiga / baja relevancia:</b> las bajas suben (ponderado) y hay un caso extremo: “REGALA AC CAMPUS” con ~3,25% de bajas sobre un segmento de 1.137.</li>
       <li><b>Hora de envío:</b> en ambos años la franja <b>10:00–12:00</b> es la mejor para CTR en envíos masivos; noche mantiene aperturas pero no empuja acción.</li>
@@ -837,7 +837,7 @@ scales: IS_MOBILE ? {
       <li><b>Optimizar franja horaria para acción:</b> priorizar envíos masivos en <b>10:00–12:00</b> cuando se pide decisión. Noche puede reservarse para “awareness” o recordatorios suaves.</li>
       <li><b>Control de bajas:</b> revisar el segmento usado en “REGALA AC CAMPUS” (3,25% de bajas). Señal típica de: público poco alineado, demasiada presión comercial o falta de expectativa de recibir este tipo de mensaje.</li>
       <li><b>Audiencias:</b> separar claramente (a) leads “fríos” (awareness + sorteo), (b) interesados previos, (c) compradores/antiguos alumnos. La misma creatividad no puede servir igual a todos.</li>
-      <li><b>Medición:</b> estandarizar UTMs por campaña y un panel de GA4 con embudo: <span class="pill">open → click → landing engaged → checkout start → purchase</span>. Así el debate deja de ser “tasa de apertura” y pasa a ser “plazas vendidas”.</li>
+      
     </ol>
   `;
 </script>
